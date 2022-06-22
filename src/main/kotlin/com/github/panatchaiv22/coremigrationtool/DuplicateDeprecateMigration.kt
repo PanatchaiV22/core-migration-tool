@@ -8,17 +8,11 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.VisualPosition
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.module.ResourceFileUtil
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.modifyModules
-import com.intellij.openapi.vfs.LocalFileProvider
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.name
-import kotlin.io.path.pathString
 
-class CoreMigration : AnAction() {
+class DuplicateDeprecateMigration : AnAction() {
 
     private fun removeRootDir(file: VirtualFile): String {
         val names = file.path.split("/")
@@ -119,19 +113,18 @@ class CoreMigration : AnAction() {
             }
 
             val lines = openTextEditor.document.text.split("\n")
+            val lineCount = lines.size
             val codeBuffer = StringBuilder()
             var hasImport = false
             var hasPackage = false
-            var prevLine = "-"
             var classLineNo = 0
-            var parentCount = 0
             lines.forEachIndexed { index, line ->
                 if (line.startsWith("package ")) {
                     hasPackage = true
                 } else if (line.startsWith("import ")) {
                     hasImport = true
-                } else if (line.matches(".*(class|interface).*".toRegex())) {
-                    if ((hasPackage || hasImport) && prevLine.isBlank()) {
+                } else if (CLASS_DEF matches line) {
+                    if (hasPackage || hasImport) {
                         // End if the imports and start the class/interface definition
                         var deprecatedMessage = """
                             @Deprecated(
@@ -144,16 +137,22 @@ class CoreMigration : AnAction() {
                                 level = DeprecationLevel.WARNING
                             )
                         """.trimIndent()
-                        for (indent in 0 until parentCount) {
-                            deprecatedMessage = deprecatedMessage.prependIndent()
+                        val findSpace = """\s*""".toRegex()
+                        val spaceCount = findSpace.find(line)?.value?.length ?: 0
+                        if (spaceCount > 0) {
+                            for (i in 0 until (spaceCount / 4)) {
+                                deprecatedMessage = deprecatedMessage.prependIndent()
+                            }
                         }
                         codeBuffer.appendLine(deprecatedMessage)
                         classLineNo = index
-                        parentCount++
                     }
                 }
-                codeBuffer.appendLine(line)
-                prevLine = line
+                if (index == lineCount - 1 && line.isBlank()) {
+                    codeBuffer.append(line)
+                } else {
+                    codeBuffer.appendLine(line)
+                }
             }
 
             try {
@@ -179,7 +178,7 @@ class CoreMigration : AnAction() {
         e.presentation.isVisible = true
         // however, only allow the user to select the option iif they select
         // files correctly (e.g. at least a pair of files).
-        e.presentation.isEnabled = validateSelection(files)
+        e.presentation.isEnabled = true // validateSelection(files)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -202,5 +201,9 @@ class CoreMigration : AnAction() {
     companion object {
         private const val CSV_FILE = "/app/src/test/resources/refactor/file_comparison_paths.csv"
         private const val NOTI_GROUP = "com.github.panatchaiv22.coremigrationtool"
+        private val CLASS_DEF =
+            """\s*(?:public|protected|private|internal)*\s*(?:abstract|enum|open)*\s*(?:class|interface)\s+\w+.*""".toRegex(
+                RegexOption.DOT_MATCHES_ALL
+            )
     }
 }

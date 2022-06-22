@@ -7,26 +7,35 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService
-                serviceImplementation="com.github.panatchaiv22.coremigrationtool.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.panatchaiv22.coremigrationtool.services.MyProjectService"/>
         <notificationGroup id="com.github.panatchaiv22.coremigrationtool"
                            displayType="BALLOON"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.panatchaiv22.coremigrationtool.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
-
     <actions>
 
-        <action id="OrderFood" class="com.github.panatchaiv22.coremigrationtool.CoreMigration"
-                text="Migrate Core"
+        <group
+                id="com.github.panatchaiv22.coremigrationtool.Core.Migrations"
+                text="Core Migrations"
+                popup="true"
                 icon="AllIcons.Duplicates.SendToTheRight">
 
-            <add-to-group group-id="RefactoringMenu" anchor="last"/>
-        </action>
+            <add-to-group group-id="RefactoringMenu"
+                          anchor="last"/>
 
+            <action id="DuplicateCoreMigration"
+                    class="com.github.panatchaiv22.coremigrationtool.DuplicateDeprecateMigration"
+                    text="1. Duplicate &amp;&amp; Deprecate"
+                    icon="AllIcons.Actions.Copy"/>
+
+            <action id="ForceDeprecateMigration"
+                    class="com.github.panatchaiv22.coremigrationtool.ForceDeprecateMigration"
+                    text="2. Force Deprecation"
+                    icon="AllIcons.Actions.Exit"/>
+
+            <action id="RemoveDeprecateMigration"
+                    class="com.github.panatchaiv22.coremigrationtool.RemoveDeprecateMigration"
+                    text="3. Remove Deprecation"
+                    icon="AllIcons.Vcs.Remove"/>
+        </group>
     </actions>
 </idea-plugin>
