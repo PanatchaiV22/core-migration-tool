@@ -16,6 +16,10 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import java.awt.datatransfer.DataFlavor
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class DuplicateHereMigration : AnAction() {
 
@@ -36,6 +40,14 @@ class DuplicateHereMigration : AnAction() {
     override fun update(e: AnActionEvent) {
         super.update(e)
         e.presentation.isEnabledAndVisible = true
+    }
+
+    // package com.example.libmodule.test
+    // /Users/panatchai/IdeaProjects/MyApplication/libmodule/src/main/java/com/example/libmodule/test/MainActivity.kt
+    private val packagePattern = """(?:.*kotlin|java/)(.*)(/.*\.kt)""".toRegex()
+    private fun newPackage(path: String): String {
+        val result = packagePattern.find(path)
+        return result?.groups?.get(1)?.value?.replace("/", ".") ?: ""
     }
 
     private fun copyFiles(
@@ -60,6 +72,16 @@ class DuplicateHereMigration : AnAction() {
                     LocalFileSystem.getInstance().findFileByIoFile(file)?.let { vf ->
                         markDeprecated(vf, oldPath, newPath, project)
                     }
+
+                    val currentPath = newFile.path
+                    val newPackage = newPackage(currentPath)
+                    val path: Path = Paths.get(currentPath)
+                    val lines: MutableList<String> = Files.readAllLines(path, StandardCharsets.UTF_8)
+                    val packageLine = lines.indexOfFirst { line ->
+                        line.startsWith("package ")
+                    }
+                    lines[packageLine] = "package $newPackage"
+                    Files.write(path, lines, StandardCharsets.UTF_8)
                 } catch (e: Exception) {
                     notify("$e", project)
                 }
