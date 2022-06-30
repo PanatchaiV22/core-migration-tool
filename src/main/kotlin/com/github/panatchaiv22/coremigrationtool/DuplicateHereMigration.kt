@@ -42,8 +42,6 @@ class DuplicateHereMigration : AnAction() {
         e.presentation.isEnabledAndVisible = true
     }
 
-    // package com.example.libmodule.test
-    // /Users/panatchai/IdeaProjects/MyApplication/libmodule/src/main/java/com/example/libmodule/test/MainActivity.kt
     private val packagePattern = """(?:.*kotlin|java/)(.*)(/.*\.kt)""".toRegex()
     private fun newPackage(path: String): String {
         val result = packagePattern.find(path)
