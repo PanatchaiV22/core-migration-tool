@@ -1,6 +1,8 @@
 package com.github.panatchaiv22.coremigrationtool
 
-import com.intellij.notification.*
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -83,7 +85,7 @@ class RemoveDeprecateMigration : AnAction() {
         }
         lines.forEachIndexed { index, line ->
             val hasFile = !fileList.firstOrNull { file ->
-                line.startsWith(file)
+                line.contains(file)
             }.isNullOrEmpty()
 
             if (!hasFile) {

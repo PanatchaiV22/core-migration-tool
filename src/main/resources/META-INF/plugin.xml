@@ -23,18 +23,21 @@
                           anchor="last"/>
 
             <action id="DuplicateCoreMigration"
-                    class="com.github.panatchaiv22.coremigrationtool.DuplicateDeprecateMigration"
+                    class="com.github.panatchaiv22.coremigrationtool.DuplicateHereMigration"
                     text="1. Duplicate &amp;&amp; Deprecate"
-                    icon="AllIcons.Actions.Copy"/>
+                    keymap="$default"
+                    icon="AllIcons.Actions.Copy" />
 
             <action id="ForceDeprecateMigration"
                     class="com.github.panatchaiv22.coremigrationtool.ForceDeprecateMigration"
                     text="2. Force Deprecation"
+                    keymap="$default"
                     icon="AllIcons.Actions.Exit"/>
 
             <action id="RemoveDeprecateMigration"
                     class="com.github.panatchaiv22.coremigrationtool.RemoveDeprecateMigration"
                     text="3. Remove Deprecation"
+                    keymap="$default"
                     icon="AllIcons.Vcs.Remove"/>
         </group>
     </actions>
