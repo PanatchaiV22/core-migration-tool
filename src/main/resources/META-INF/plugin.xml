@@ -26,17 +26,11 @@
                     class="com.github.panatchaiv22.coremigrationtool.DuplicateHereMigration"
                     text="1. Duplicate &amp;&amp; Deprecate"
                     keymap="$default"
-                    icon="AllIcons.Actions.Copy" />
-
-            <action id="ForceDeprecateMigration"
-                    class="com.github.panatchaiv22.coremigrationtool.ForceDeprecateMigration"
-                    text="2. Force Deprecation"
-                    keymap="$default"
-                    icon="AllIcons.Actions.Exit"/>
+                    icon="AllIcons.Actions.Copy"/>
 
             <action id="RemoveDeprecateMigration"
                     class="com.github.panatchaiv22.coremigrationtool.RemoveDeprecateMigration"
-                    text="3. Remove Deprecation"
+                    text="2. Remove Deprecation"
                     keymap="$default"
                     icon="AllIcons.Vcs.Remove"/>
         </group>

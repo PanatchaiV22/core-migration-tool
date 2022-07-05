@@ -12,6 +12,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -21,7 +22,7 @@ import javax.swing.JPanel
 class RemoveDeprecateMigration : AnAction() {
 
     private fun validateSelection(files: Array<VirtualFile>): Boolean {
-        return files.isNotEmpty() && files.none { it.isDirectory }
+        return files.isNotEmpty()
     }
 
     private fun notify(msg: String, project: Project) {
@@ -36,6 +37,17 @@ class RemoveDeprecateMigration : AnAction() {
         for (file in files) {
             try {
                 val r = Runnable {
+                    if (file.isDirectory) {
+                        VfsUtilCore.iterateChildrenRecursively(file, null) { vf ->
+                            try {
+                                vf.delete(project)
+                                true
+                            } catch (e: Exception) {
+                                notify(e.toString(), project)
+                                false
+                            }
+                        }
+                    }
                     file.delete(project)
                 }
                 WriteCommandAction.runWriteCommandAction(project, r)
@@ -117,7 +129,7 @@ class RemoveDeprecateMigration : AnAction() {
         val files: Array<VirtualFile> = e.dataContext.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY) ?: emptyArray()
         if (!validateSelection(files)) {
             e.project?.let { project ->
-                notify("Invalid selection. Please makes sure you have selected files and not folders.", project)
+                notify("Invalid selection. Please makes sure you have selected files or folders.", project)
             }
             return
         }
