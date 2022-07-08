@@ -25,7 +25,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-
 class DuplicateHereMigration : AnAction() {
 
     private fun validateSelection(files: Array<VirtualFile>): Boolean {
@@ -360,7 +359,7 @@ class DuplicateHereMigration : AnAction() {
                 hasImport = true
             } else if (line.trim().startsWith("@Deprecated")) {
                 hasDeprecated = true
-            } else if (CLASS_DEF matches line) {
+            } else if (CLASS_AND_EXTENSION_DEF matches line) {
                 if ((hasPackage || hasImport) && !hasDeprecated) {
                     // End if the imports and start the class/interface definition
                     var deprecatedMessage = """
@@ -429,9 +428,8 @@ class DuplicateHereMigration : AnAction() {
         private const val NOTI_GROUP = "com.github.panatchaiv22.coremigrationtool"
         private const val CSV_FILE = "/app/src/test/resources/refactor/file_comparison_paths.csv"
         private const val GIT_DUP_BRANCH = "tmp/core-migration-duplication"
-        private val CLASS_DEF =
-            """\s*(?:public|protected|private|internal)*\s*(?:abstract|enum|open)*\s*(?:class|interface)\s+\w+.*""".toRegex(
-                RegexOption.DOT_MATCHES_ALL
-            )
+
+        private val CLASS_AND_EXTENSION_DEF =
+            """\s*(?:public|protected|private|internal)*\s*(?:(?:abstract|enum|open|data)*\s*(?:class|interface|object)\s+\w+.*|(?:fun)+\s*(?:.*\..*\().*)""".toRegex()
     }
 }
