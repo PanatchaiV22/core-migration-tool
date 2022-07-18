@@ -143,9 +143,11 @@ class DuplicateHereMigration : AnAction() {
             // command to restore the original files later
             gitRestoreCommands.add(newCommandLine(listOf("git", "checkout", "HEAD~", pair.first), project))
 
-            csvBuilder.appendLine("${pair.first},${pair.second}")
-            moveCommitMessageBuilder.appendLine("Moved ${pair.first} to ${pair.second}")
-            restoreCommitMessageBuilder.appendLine("Restored ${pair.first}")
+            val fromFile = removeRootDir(pair.first)
+            val toFile = removeRootDir(pair.second)
+            csvBuilder.appendLine("$fromFile,$toFile")
+            moveCommitMessageBuilder.appendLine("Moved $fromFile to $toFile")
+            restoreCommitMessageBuilder.appendLine("Restored $fromFile")
         }
         csvBuilder.deleteAt(csvBuilder.lastIndexOf("\n")) // remove the last empty line
         moveCommitMessageBuilder.deleteAt(moveCommitMessageBuilder.lastIndexOf("\n")) // remove the last empty line
