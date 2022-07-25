@@ -343,7 +343,7 @@ class DuplicateHereMigration : AnAction() {
     private fun markDeprecated(
         oldPath: String, newPath: String, project: Project
     ): Boolean {
-        //       /Users/panatchai/IdeaProjects/MyApplication/app/src/main/java/com/example/myapplication/pack1/A.kt
+        // /Users/panatchai/IdeaProjects/MyApplication/app/src/main/java/com/example/myapplication/pack1/A.kt
         // /Users/panatchai/IdeaProjects/MyApplication/libmodule/src/main/java/com/example/libmodule/test/pack1/A.kt
 
         val path: Path = Paths.get(oldPath)
@@ -432,6 +432,6 @@ class DuplicateHereMigration : AnAction() {
         private const val GIT_DUP_BRANCH = "tmp/core-migration-duplication"
 
         private val CLASS_AND_EXTENSION_DEF =
-            """\s*(?:public|protected|private|internal)*\s*(?:(?:abstract|enum|open|data)*\s*(?:class|interface|object)\s+\w+.*|(?:fun)+\s*(?:.*\..*\().*)""".toRegex()
+            """\s*(?:public|protected|private|internal)*\s*(?:(?:abstract|enum|open|data)*\s*(?:class|interface|object)\s+\w+.*|(?:fun)+\s*(?:[\w\d_]+\.[\w\d_]+\().*)""".toRegex()
     }
 }
